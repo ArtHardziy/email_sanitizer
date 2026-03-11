@@ -18,13 +18,15 @@ HIGH_FLAGS = {
     RiskFlag.SOCIAL_ENGINEERING_TONE,
     RiskFlag.MEDICAL_CONTENT,
     RiskFlag.FINANCIAL_CONTENT,
+    RiskFlag.SUSPICIOUS_URL,
 }
 
 
 def sanitize_email(email: RawEmail, policy: SanitizerPolicy | None = None) -> SanitizedEmail:
     policy = policy or SanitizerPolicy()
     flags = detect_risk_flags(email)
-    redaction = sanitize_text(email.body_text, redact_contact_details=policy.redact_contact_details)
+    combined_text = "\n".join(filter(None, [email.snippet, email.body_text]))
+    redaction = sanitize_text(combined_text, redact_contact_details=policy.redact_contact_details)
     sanitized_snippet = (redaction.sanitized_text[: policy.max_snippet_chars]).strip() or None
 
     risk_level = _compute_risk_level(flags)

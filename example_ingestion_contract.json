@@ -1,0 +1,27 @@
+{
+  "source_id": "imap:inbox:12345",
+  "raw_email_shape": {
+    "sender": "alerts@example.com",
+    "subject": "Security alert",
+    "date": "2026-03-11T16:00:00Z",
+    "body_text": "Raw text lives only in the sanitizer boundary.",
+    "snippet": "Optional short provider snippet.",
+    "attachments": [
+      {
+        "filename": "notice.pdf",
+        "mime_type": "application/pdf",
+        "size_bytes": 123456
+      }
+    ]
+  },
+  "output_shape": {
+    "source_id": "imap:inbox:12345",
+    "sanitized": {
+      "sender": "alerts@example.com",
+      "subject": "Security alert",
+      "risk_level": "critical",
+      "allowed_view": "block_and_notify",
+      "safe_summary": "Получено потенциально чувствительное письмо. Содержимое заблокировано политикой безопасности."
+    }
+  }
+}
