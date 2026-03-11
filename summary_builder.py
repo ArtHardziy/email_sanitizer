@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import re
-from typing import Iterable
 
+from extractors import extract_facts
 from models import AllowedView, RawEmail, RiskFlag
 
 
@@ -21,8 +21,16 @@ def build_content_aware_summary(email: RawEmail, flags: list[RiskFlag], allowed_
     useful = [s for s in sentences if not NOISY_SENTENCE_RE.search(s)]
     chosen = useful[:2] if useful else [email.subject]
     text = " ".join(chosen).strip()
+    facts = extract_facts(text)
+
+    extras: list[str] = []
+    if facts.action_items:
+        extras.append("Действия: " + " | ".join(facts.action_items[:2]))
+    if facts.date_mentions:
+        extras.append("Даты/время: " + ", ".join(facts.date_mentions[:3]))
 
     if flags and allowed_view == AllowedView.SUMMARY_ONLY:
         labels = ", ".join(flag.value for flag in flags)
-        return f"{text} Флаги риска: {labels}."
-    return text
+        extras.append(f"Флаги риска: {labels}")
+
+    return (text + (" " + " ".join(extras) if extras else "")).strip()

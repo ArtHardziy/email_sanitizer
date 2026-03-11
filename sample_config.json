@@ -1,0 +1,25 @@
+{
+  "mailboxes": [
+    {
+      "name": "personal",
+      "provider": "imap",
+      "host": "imap.example.com",
+      "port": 993,
+      "username": "user@example.com",
+      "folder": "INBOX",
+      "useSsl": true,
+      "policyProfile": "balanced",
+      "notifyMinLevel": "high",
+      "importancePolicy": {
+        "prioritySenders": [],
+        "priorityDomains": ["github.com", "clinic.example.com"],
+        "noisySenders": ["newsletter@example.com"],
+        "notifyOnMedical": true,
+        "notifyOnFinancial": true,
+        "notifyOnSecurity": true,
+        "notifyOnBlockedSensitive": true
+      },
+      "enabled": true
+    }
+  ]
+}

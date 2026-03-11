@@ -9,6 +9,7 @@ from mail_fetcher import MailFetcher
 from integration import MailSourceRecord
 from models import AttachmentMeta, RawEmail
 from config import MailboxConfig
+from html_utils import html_to_text
 
 
 class IMAPFetcher(MailFetcher):
@@ -62,18 +63,29 @@ def parse_eml_bytes(source_id: str, payload: bytes) -> MailSourceRecord:
 
 def _extract_text_body(msg: Message) -> str:
     if msg.is_multipart():
+        html_candidate = ''
         for part in msg.walk():
-            if part.get_content_type() == 'text/plain' and 'attachment' not in str(part.get('Content-Disposition', '')).lower():
+            disposition = str(part.get('Content-Disposition', '')).lower()
+            if 'attachment' in disposition:
+                continue
+            if part.get_content_type() == 'text/plain':
                 data = part.get_payload(decode=True) or b''
                 charset = part.get_content_charset() or 'utf-8'
                 return data.decode(charset, errors='replace')
-        return ''
+            if part.get_content_type() == 'text/html' and not html_candidate:
+                data = part.get_payload(decode=True) or b''
+                charset = part.get_content_charset() or 'utf-8'
+                html_candidate = data.decode(charset, errors='replace')
+        return html_to_text(html_candidate) if html_candidate else ''
     data = msg.get_payload(decode=True)
     if data is None:
         payload = msg.get_payload()
-        return payload if isinstance(payload, str) else ''
+        if isinstance(payload, str):
+            return html_to_text(payload) if msg.get_content_type() == 'text/html' else payload
+        return ''
     charset = msg.get_content_charset() or 'utf-8'
-    return data.decode(charset, errors='replace')
+    decoded = data.decode(charset, errors='replace')
+    return html_to_text(decoded) if msg.get_content_type() == 'text/html' else decoded
 
 
 def _extract_attachments(msg: Message) -> list[AttachmentMeta]:

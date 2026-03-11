@@ -25,17 +25,26 @@
 - `mail_fetcher.py` — fetcher contract + static development fetcher
 - `imap_adapter.py` — thin IMAP adapter + `.eml` parsing helper
 - `config.py` — mailbox/app config models
+- `config_loader.py` — загрузка mailbox config из JSON
 - `mailbox_rules.py` — allow/deny sender/domain rules
 - `summary_builder.py` — content-aware safe summary builder
+- `extractors.py` — извлечение action items / dates из safe content
+- `html_utils.py` — HTML -> text normalization
 - `policy_profiles.py` — готовые профили policy (`strict`, `balanced`, `work-heavy`, `privacy-max`)
 - `importance_classifier.py` — определение важности после safety-sanitization
 - `notifier.py` — сборка коротких безопасных user alerts
+- `dedup.py` — дедупликация уведомлений
+- `batching.py` — батчинг уведомлений
 - `pipeline.py` — mailbox-level orchestration
 - `tests.py` — core smoke/invariant tests
 - `tests_pipeline.py` — pipeline-level tests
 - `tests_summary.py` — summary builder tests
 - `tests_adapter.py` — adapter parsing tests
 - `tests_mailbox_pipeline.py` — mailbox orchestration tests
+- `tests_config.py` — config loader tests
+- `tests_dedup_batching.py` — dedup/batching tests
+- `tests_html_extractors.py` — html/extractor tests
+- `sample_config.json` — пример локального конфига
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
 - `runner_demo.py` — mailbox orchestration demo
@@ -88,7 +97,7 @@
    - локальная загрузка секретов/токенов вне agent-facing path
    - безопасный fetch unseen/new mail
    - маркировка processed/read state
-2. persistence/config loading
+2. config + secrets integration
    - mailbox config из file/env/secrets
    - policy profile selection per mailbox
    - notify thresholds and schedules
@@ -96,25 +105,26 @@
    - sender/domain/category allowlists
    - noisy sender suppression
    - per-mailbox overrides
-4. stronger summaries
-   - лучшее извлечение action items / dates / urgency
-   - безопасная нормализация subject/snippet/body
-5. delivery integration
+4. delivery integration
    - сериализация `NotificationMessage` в OpenClaw-facing alerts
-   - batching and deduplication
+   - batching and deduplication поверх runtime state
+5. stronger structured extraction
+   - action items / dates / reply-needed / call-needed
+   - безопасная нормализация subject/snippet/body
 6. расширить tests:
    - multipart emails
    - html-only emails
    - encoded headers
    - newsletters/noise suppression
    - sender deny + security override conflicts
+   - duplicate notification suppression
 
 ## Ограничения текущей версии
 - IMAP adapter пока intentionally incomplete: нет реального login flow и работы с секретами.
 - Нет Gmail adapter.
-- Нет persistent config loading из файлов/env.
+- Нет secrets-aware config loader.
 - Нет delivery integration в реальный alerting channel.
-- Content-aware summary пока лёгкий эвристический, не извлекает action items структурно.
+- Structured extraction пока эвристическое и лёгкое.
 
 ## Запуск локальной проверки
 Из папки `email_sanitizer/`:
