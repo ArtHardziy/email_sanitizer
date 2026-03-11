@@ -23,13 +23,22 @@
 - `sanitizer.py` — orchestration pipeline
 - `integration.py` — boundary между mail ingestion и agent-safe output
 - `mail_fetcher.py` — fetcher contract + static development fetcher
+- `imap_adapter.py` — thin IMAP adapter + `.eml` parsing helper
+- `config.py` — mailbox/app config models
+- `mailbox_rules.py` — allow/deny sender/domain rules
+- `summary_builder.py` — content-aware safe summary builder
 - `policy_profiles.py` — готовые профили policy (`strict`, `balanced`, `work-heavy`, `privacy-max`)
 - `importance_classifier.py` — определение важности после safety-sanitization
 - `notifier.py` — сборка коротких безопасных user alerts
+- `pipeline.py` — mailbox-level orchestration
 - `tests.py` — core smoke/invariant tests
 - `tests_pipeline.py` — pipeline-level tests
+- `tests_summary.py` — summary builder tests
+- `tests_adapter.py` — adapter parsing tests
+- `tests_mailbox_pipeline.py` — mailbox orchestration tests
 - `example_usage.py` — демонстрационный сценарий
-- `pipeline_demo.py` — end-to-end demo
+- `pipeline_demo.py` — sanitizer pipeline demo
+- `runner_demo.py` — mailbox orchestration demo
 - `example_ingestion_contract.json` — пример контракта raw->sanitized
 
 ## Текущая логика
@@ -75,33 +84,37 @@
 
 ## Что делать дальше
 Следующий этап разработки:
-1. реальный IMAP/Gmail adapter поверх `mail_fetcher.py`
-   - безопасный fetch metadata/snippet/body локально
-   - raw письма не отдавать наружу
-2. расширить `ImportancePolicy`
-   - allowlist/denylist sender/domain
-   - priority categories
-   - per-mailbox rules
-3. сделать content-aware summarization
-   - безопасное извлечение фактов вместо шаблонного summary
-4. добавить persistence/config
-   - policy profiles from file/env
-   - notify thresholds
-   - mailbox-specific config
-5. расширить tests:
-   - magic links
-   - shorteners
-   - bank/security emails
-   - medical appointment vs medical results
-   - work emails with harmless links
+1. реальный credential-aware IMAP/Gmail adapter
+   - локальная загрузка секретов/токенов вне agent-facing path
+   - безопасный fetch unseen/new mail
+   - маркировка processed/read state
+2. persistence/config loading
+   - mailbox config из file/env/secrets
+   - policy profile selection per mailbox
+   - notify thresholds and schedules
+3. richer allow/deny and categorization
+   - sender/domain/category allowlists
+   - noisy sender suppression
+   - per-mailbox overrides
+4. stronger summaries
+   - лучшее извлечение action items / dates / urgency
+   - безопасная нормализация subject/snippet/body
+5. delivery integration
+   - сериализация `NotificationMessage` в OpenClaw-facing alerts
+   - batching and deduplication
+6. расширить tests:
+   - multipart emails
+   - html-only emails
+   - encoded headers
    - newsletters/noise suppression
+   - sender deny + security override conflicts
 
 ## Ограничения текущей версии
-- Нет реального mail ingestion adapter'а, только contract и static fetcher.
-- Нет persistent policy config.
-- Нет полноценного allowlist/denylist sender/domain ruleset.
-- Summary пока шаблонный, а не content-aware.
-- Нет интеграции с реальным notifier/delivery каналом — только локальная сборка сообщений.
+- IMAP adapter пока intentionally incomplete: нет реального login flow и работы с секретами.
+- Нет Gmail adapter.
+- Нет persistent config loading из файлов/env.
+- Нет delivery integration в реальный alerting channel.
+- Content-aware summary пока лёгкий эвристический, не извлекает action items структурно.
 
 ## Запуск локальной проверки
 Из папки `email_sanitizer/`:

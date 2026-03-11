@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from models import AllowedView, RawEmail, RiskFlag, RiskLevel, SanitizedEmail, SanitizerPolicy
 from rules import detect_risk_flags, sanitize_text
+from summary_builder import build_content_aware_summary
 
 
 CRITICAL_FLAGS = {
@@ -31,7 +32,7 @@ def sanitize_email(email: RawEmail, policy: SanitizerPolicy | None = None) -> Sa
 
     risk_level = _compute_risk_level(flags)
     allowed_view = _decide_allowed_view(flags, policy)
-    summary = _build_safe_summary(email, flags, allowed_view)
+    summary = build_content_aware_summary(email, flags, allowed_view, redaction.sanitized_text)
     rationale = _build_rationale(flags, allowed_view, redaction.redactions)
 
     return SanitizedEmail(
@@ -75,26 +76,6 @@ def _decide_allowed_view(flags: list[RiskFlag], policy: SanitizerPolicy) -> Allo
     if flag_set:
         return AllowedView.SUMMARY_ONLY
     return AllowedView.ALLOW_SANITIZED
-
-
-def _build_safe_summary(email: RawEmail, flags: list[RiskFlag], allowed_view: AllowedView) -> str:
-    if allowed_view == AllowedView.BLOCK_AND_NOTIFY:
-        return (
-            f"Получено потенциально чувствительное письмо от {email.sender}. "
-            f"Содержимое заблокировано политикой безопасности."
-        )
-    if allowed_view == AllowedView.METADATA_ONLY:
-        return (
-            f"Получено письмо от {email.sender} с ограниченным доступом. "
-            f"Доступны только метаданные из-за чувствительного содержимого."
-        )
-    if allowed_view == AllowedView.SUMMARY_ONLY:
-        labels = ", ".join(flag.value for flag in flags) if flags else "restricted_content"
-        return (
-            f"Получено письмо от {email.sender}. Содержимое сокращено и санитизировано. "
-            f"Флаги риска: {labels}."
-        )
-    return f"Получено письмо от {email.sender}. После санитизации доступен безопасный текст для анализа."
 
 
 def _build_rationale(flags: list[RiskFlag], allowed_view: AllowedView, redactions: list[str]) -> list[str]:
