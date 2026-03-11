@@ -29,13 +29,17 @@
 - `mailbox_rules.py` — allow/deny sender/domain rules
 - `summary_builder.py` — content-aware safe summary builder
 - `extractors.py` — извлечение action items / dates из safe content
+- `action_classifier.py` — эвристическое определение типов действий (`reply`, `call`, `payment`, `review`, `confirmation`)
 - `html_utils.py` — HTML -> text normalization
 - `policy_profiles.py` — готовые профили policy (`strict`, `balanced`, `work-heavy`, `privacy-max`)
 - `importance_classifier.py` — определение важности после safety-sanitization
 - `notifier.py` — сборка коротких безопасных user alerts
 - `dedup.py` — дедупликация уведомлений
 - `batching.py` — батчинг уведомлений
+- `secrets_config.py` — env-based resolution ссылок на mailbox secrets
+- `state_store.py` — JSON-based tracking processed mail ids
 - `pipeline.py` — mailbox-level orchestration
+- `imap_runner.py` — skeleton для future real IMAP run cycle
 - `tests.py` — core smoke/invariant tests
 - `tests_pipeline.py` — pipeline-level tests
 - `tests_summary.py` — summary builder tests
@@ -44,6 +48,8 @@
 - `tests_config.py` — config loader tests
 - `tests_dedup_batching.py` — dedup/batching tests
 - `tests_html_extractors.py` — html/extractor tests
+- `tests_state_actions.py` — state store + action classifier tests
+- `tests_secrets.py` — secret resolution tests
 - `sample_config.json` — пример локального конфига
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
@@ -97,7 +103,7 @@
    - локальная загрузка секретов/токенов вне agent-facing path
    - безопасный fetch unseen/new mail
    - маркировка processed/read state
-2. config + secrets integration
+2. richer config + secrets integration
    - mailbox config из file/env/secrets
    - policy profile selection per mailbox
    - notify thresholds and schedules
@@ -109,7 +115,7 @@
    - сериализация `NotificationMessage` в OpenClaw-facing alerts
    - batching and deduplication поверх runtime state
 5. stronger structured extraction
-   - action items / dates / reply-needed / call-needed
+   - action items / dates / reply-needed / call-needed / payment-needed
    - безопасная нормализация subject/snippet/body
 6. расширить tests:
    - multipart emails
@@ -120,16 +126,27 @@
    - duplicate notification suppression
 
 ## Ограничения текущей версии
-- IMAP adapter пока intentionally incomplete: нет реального login flow и работы с секретами.
+- IMAP adapter / runner пока intentionally incomplete: нет реального login flow и работы с секретами.
 - Нет Gmail adapter.
-- Нет secrets-aware config loader.
+- Config loader пока читает JSON, но без полноценной file/env/secrets merge-логики.
 - Нет delivery integration в реальный alerting channel.
 - Structured extraction пока эвристическое и лёгкое.
 
 ## Запуск локальной проверки
 Из папки `email_sanitizer/`:
 - `python tests.py`
+- `python tests_pipeline.py`
+- `python tests_summary.py`
+- `python tests_adapter.py`
+- `python tests_mailbox_pipeline.py`
+- `python tests_config.py`
+- `python tests_dedup_batching.py`
+- `python tests_html_extractors.py`
+- `python tests_state_actions.py`
+- `python tests_secrets.py`
 - `python example_usage.py`
+- `python pipeline_demo.py`
+- `python runner_demo.py`
 
 ## Принцип для будущих изменений
 Лучше лишний раз заблокировать и уведомить пользователя, чем пропустить auth/injection контент в агентный слой.

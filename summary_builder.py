@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from action_classifier import classify_actions
 from extractors import extract_facts
 from models import AllowedView, RawEmail, RiskFlag
 
@@ -22,10 +23,13 @@ def build_content_aware_summary(email: RawEmail, flags: list[RiskFlag], allowed_
     chosen = useful[:2] if useful else [email.subject]
     text = " ".join(chosen).strip()
     facts = extract_facts(text)
+    actions = classify_actions(text)
 
     extras: list[str] = []
     if facts.action_items:
         extras.append("Действия: " + " | ".join(facts.action_items[:2]))
+    if actions.kinds:
+        extras.append("Типы действий: " + ", ".join(kind.value for kind in actions.kinds[:3]))
     if facts.date_mentions:
         extras.append("Даты/время: " + ", ".join(facts.date_mentions[:3]))
 
