@@ -166,3 +166,18 @@ Preset должен задавать:
 - partial success contract
 - aggregate notifications
 - unified message projection
+
+## Mailbox onboarding contract (implemented baseline)
+Введён baseline onboarding слой для lifecycle команд:
+- connect
+- auth complete
+- reauth
+- disconnect
+
+В нём уже есть:
+- mailbox states
+- connected mailbox DTO
+- credential ref DTO
+- OAuth authorization session DTO
+- onboarding instructions
+- локальный onboarding CLI

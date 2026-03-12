@@ -47,6 +47,9 @@
 - `aggregate_models.py` — DTOs for aggregated mailbox runs and unified messages
 - `aggregated_runner.py` — baseline fan-out runner across multiple mailbox runtimes
 - `unified_reader.py` — projection of processed records into unified message view
+- `onboarding_models.py` — mailbox lifecycle / onboarding DTOs and states
+- `onboarding_service.py` — baseline onboarding transitions for connect/auth-complete/reauth/disconnect
+- `onboarding_cli.py` — local CLI for onboarding flows
 - `secret_binding.py` — mailbox-specific secret binding
 - `provider_state.py` — provider-side state ops abstraction (`mark_seen`)
 - `imap_client.py` — low-level IMAP session wrapper (`select/search/fetch/store`)
@@ -76,6 +79,7 @@
 - `tests_multi_runtime.py` — multi-mailbox runtime tests
 - `tests_provider_presets.py` — provider preset tests
 - `tests_aggregated_runner.py` — aggregated runner tests
+- `tests_onboarding.py` — onboarding contract tests
 - `tests_imap_client.py` — low-level IMAP session tests
 - `tests_live_components.py` — live fetcher + secret binding tests
 - `tests_merge_sync.py` — env merge + sync decision tests
@@ -88,6 +92,7 @@
 - `runner_demo.py` — mailbox orchestration demo
 - `provider_presets_demo.py` — provider preset demo
 - `aggregated_runner_demo.py` — aggregated runner demo
+- `onboarding_demo.py` — onboarding lifecycle demo
 - `multi_runtime_demo.py` — multi-mailbox runtime demo
 - `dry_run_demo.py` — runner dry-run demo with state persistence
 - `live_dry_run.py` — env/config/live-runtime dry-run demo
@@ -157,6 +162,7 @@
    - connect/auth complete/reauth/disconnect states
    - provider-specific onboarding instructions
    - machine-readable contract for CLI + agent
+   - status: базовый слой введён (`onboarding_models.py`, `onboarding_service.py`, `onboarding_cli.py`)
 5. richer config + secrets integration
    - file/env/secrets precedence and validation
    - mailbox-specific secret binding
@@ -197,6 +203,7 @@
 - `python tests_multi_runtime.py`
 - `python tests_provider_presets.py`
 - `python tests_aggregated_runner.py`
+- `python tests_onboarding.py`
 - `python tests_imap_client.py`
 - `python tests_live_components.py`
 - `python tests_merge_sync.py`
@@ -208,6 +215,7 @@
 - `python runner_demo.py`
 - `python provider_presets_demo.py`
 - `python aggregated_runner_demo.py`
+- `python onboarding_demo.py`
 - `python multi_runtime_demo.py`
 - `python dry_run_demo.py`
 - `python live_dry_run.py`
