@@ -140,3 +140,19 @@
 3. Ввести multi-mailbox aggregate runtime / runner
 4. Ввести onboarding contracts (connect/auth complete/reconnect)
 5. Встроить это в CLI/diagnostics
+
+## Provider presets (implemented baseline)
+Введён отдельный слой provider presets с целевыми профилями для:
+- Gmail
+- Yandex
+- Mail.ru
+- iCloud
+
+Preset должен задавать:
+- provider id
+- display name
+- IMAP host/port
+- SSL default
+- preferred auth mode
+- allowed auth modes
+- onboarding hints
