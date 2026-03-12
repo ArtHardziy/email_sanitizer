@@ -1,0 +1,34 @@
+{
+  "mailboxes": [
+    {
+      "name": "gmail-main",
+      "provider": "imap",
+      "host": "imap.gmail.com",
+      "port": 993,
+      "username": "user@gmail.com",
+      "folder": "INBOX",
+      "useSsl": true,
+      "policyProfile": "balanced",
+      "notifyMinLevel": "high",
+      "importancePolicy": {
+        "priorityDomains": ["github.com"]
+      },
+      "enabled": true
+    },
+    {
+      "name": "yandex-main",
+      "provider": "imap",
+      "host": "imap.yandex.com",
+      "port": 993,
+      "username": "user@yandex.ru",
+      "folder": "INBOX",
+      "useSsl": true,
+      "policyProfile": "balanced",
+      "notifyMinLevel": "high",
+      "importancePolicy": {
+        "priorityDomains": ["yandex.ru"]
+      },
+      "enabled": true
+    }
+  ]
+}

@@ -41,6 +41,8 @@
 - `state_filter.py` — filtering unprocessed records + processed id extraction
 - `runtime_config.py` — mailbox runtime assembly (`mailbox + secrets + rules + state_store`)
 - `runtime_loader.py` — загрузка runtimes из config
+- `multi_runtime.py` — aggregate runtime object over multiple mailbox runtimes
+- `multi_runtime_loader.py` — loading a multi-mailbox runtime from config
 - `secret_binding.py` — mailbox-specific secret binding
 - `provider_state.py` — provider-side state ops abstraction (`mark_seen`)
 - `imap_client.py` — low-level IMAP session wrapper (`select/search/fetch/store`)
@@ -67,6 +69,7 @@
 - `tests_secrets.py` — secret resolution tests
 - `tests_runner.py` — runner lifecycle tests
 - `tests_runtime_loader.py` — runtime loader tests
+- `tests_multi_runtime.py` — multi-mailbox runtime tests
 - `tests_imap_client.py` — low-level IMAP session tests
 - `tests_live_components.py` — live fetcher + secret binding tests
 - `tests_merge_sync.py` — env merge + sync decision tests
@@ -77,6 +80,7 @@
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
 - `runner_demo.py` — mailbox orchestration demo
+- `multi_runtime_demo.py` — multi-mailbox runtime demo
 - `dry_run_demo.py` — runner dry-run demo with state persistence
 - `live_dry_run.py` — env/config/live-runtime dry-run demo
 - `example_ingestion_contract.json` — пример контракта raw->sanitized
@@ -128,6 +132,7 @@
    - aggregate runtime над несколькими mailbox
    - mailbox-specific state/rules/secrets
    - unified orchestration поверх enabled mailbox
+   - status: базовый слой введён (`multi_runtime.py`, `multi_runtime_loader.py`)
 2. provider presets
    - Gmail
    - Yandex
@@ -179,6 +184,7 @@
 - `python tests_secrets.py`
 - `python tests_runner.py`
 - `python tests_runtime_loader.py`
+- `python tests_multi_runtime.py`
 - `python tests_imap_client.py`
 - `python tests_live_components.py`
 - `python tests_merge_sync.py`
@@ -188,6 +194,7 @@
 - `python example_usage.py`
 - `python pipeline_demo.py`
 - `python runner_demo.py`
+- `python multi_runtime_demo.py`
 - `python dry_run_demo.py`
 - `python live_dry_run.py`
 - `python cli.py validate --config sample_config.json --json`

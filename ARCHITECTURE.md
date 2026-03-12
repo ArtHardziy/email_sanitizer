@@ -135,7 +135,8 @@
 - production-grade secrets integration
 
 ## Следующий шаг реализации
-1. Ввести provider presets и provider metadata
-2. Ввести multi-mailbox aggregate runtime / runner
-3. Ввести onboarding contracts (connect/auth complete/reconnect)
-4. Встроить это в CLI/diagnostics
+1. Ввести multi-mailbox config/runtime layer
+2. Ввести provider presets и provider metadata
+3. Ввести multi-mailbox aggregate runtime / runner
+4. Ввести onboarding contracts (connect/auth complete/reconnect)
+5. Встроить это в CLI/diagnostics
