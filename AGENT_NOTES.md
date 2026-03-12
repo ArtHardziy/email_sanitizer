@@ -38,7 +38,11 @@
 - `batching.py` — батчинг уведомлений
 - `secrets_config.py` — env-based resolution ссылок на mailbox secrets
 - `state_store.py` — JSON-based tracking processed mail ids
+- `state_filter.py` — filtering unprocessed records + processed id extraction
+- `runtime_config.py` — mailbox runtime assembly (`mailbox + secrets + rules + state_store`)
+- `runtime_loader.py` — загрузка runtimes из config
 - `pipeline.py` — mailbox-level orchestration
+- `runner.py` — one-cycle mailbox runner with state + dedup
 - `imap_runner.py` — skeleton для future real IMAP run cycle
 - `tests.py` — core smoke/invariant tests
 - `tests_pipeline.py` — pipeline-level tests
@@ -50,10 +54,13 @@
 - `tests_html_extractors.py` — html/extractor tests
 - `tests_state_actions.py` — state store + action classifier tests
 - `tests_secrets.py` — secret resolution tests
+- `tests_runner.py` — runner lifecycle tests
+- `tests_runtime_loader.py` — runtime loader tests
 - `sample_config.json` — пример локального конфига
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
 - `runner_demo.py` — mailbox orchestration demo
+- `dry_run_demo.py` — runner dry-run demo with state persistence
 - `example_ingestion_contract.json` — пример контракта raw->sanitized
 
 ## Текущая логика
@@ -107,6 +114,7 @@
    - mailbox config из file/env/secrets
    - policy profile selection per mailbox
    - notify thresholds and schedules
+   - mailbox-specific secret binding
 3. richer allow/deny and categorization
    - sender/domain/category allowlists
    - noisy sender suppression
@@ -129,6 +137,7 @@
 - IMAP adapter / runner пока intentionally incomplete: нет реального login flow и работы с секретами.
 - Нет Gmail adapter.
 - Config loader пока читает JSON, но без полноценной file/env/secrets merge-логики.
+- Runner state сейчас локальный JSON-based, без provider-side seen/ack integration.
 - Нет delivery integration в реальный alerting channel.
 - Structured extraction пока эвристическое и лёгкое.
 
@@ -144,9 +153,12 @@
 - `python tests_html_extractors.py`
 - `python tests_state_actions.py`
 - `python tests_secrets.py`
+- `python tests_runner.py`
+- `python tests_runtime_loader.py`
 - `python example_usage.py`
 - `python pipeline_demo.py`
 - `python runner_demo.py`
+- `python dry_run_demo.py`
 
 ## Принцип для будущих изменений
 Лучше лишний раз заблокировать и уведомить пользователя, чем пропустить auth/injection контент в агентный слой.
