@@ -181,3 +181,10 @@ Preset должен задавать:
 - OAuth authorization session DTO
 - onboarding instructions
 - локальный onboarding CLI
+
+## Gmail-first onboarding refinement (implemented baseline)
+Введён baseline Gmail OAuth contract:
+- Gmail preset now contains OAuth metadata
+- отдельные OAuth DTO введены
+- есть start/complete contract для Google OAuth
+- onboarding flow для Gmail теперь выдаёт provider-specific authorization URL

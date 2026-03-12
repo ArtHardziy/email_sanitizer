@@ -4,6 +4,7 @@ from dataclasses import dataclass, replace
 from enum import Enum
 
 from config import MailboxConfig
+from oauth_models import OAuthConfig
 
 
 class ProviderId(str, Enum):
@@ -30,6 +31,7 @@ class ProviderPreset:
     preferred_auth_mode: AuthMode
     allowed_auth_modes: list[AuthMode]
     onboarding_hints: list[str]
+    oauth_config: OAuthConfig | None = None
     supports_incremental_sync: bool = True
     supports_mark_seen: bool = True
 
@@ -47,6 +49,17 @@ PRESETS: dict[ProviderId, ProviderPreset] = {
             "Use OAuth 2.0 as the primary authentication path.",
             "Preserve abstraction so IMAP XOAUTH2 can later be swapped for Gmail API without breaking the domain model.",
         ],
+        oauth_config=OAuthConfig(
+            authorization_url="https://accounts.google.com/o/oauth2/v2/auth",
+            token_url="https://oauth2.googleapis.com/token",
+            redirect_uri="https://backend.example.com/oauth/google/callback",
+            scopes=[
+                "https://mail.google.com/",
+                "openid",
+                "email",
+            ],
+            use_pkce=True,
+        ),
     ),
     ProviderId.YANDEX: ProviderPreset(
         provider_id=ProviderId.YANDEX,

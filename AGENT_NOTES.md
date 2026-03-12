@@ -44,11 +44,13 @@
 - `multi_runtime.py` — aggregate runtime object over multiple mailbox runtimes
 - `multi_runtime_loader.py` — loading a multi-mailbox runtime from config
 - `provider_presets.py` — provider defaults and auth-mode metadata for Gmail/Yandex/Mail.ru/iCloud
+- `oauth_models.py` — provider-aware OAuth DTOs
+- `gmail_oauth_service.py` — baseline Gmail OAuth start/complete contract
 - `aggregate_models.py` — DTOs for aggregated mailbox runs and unified messages
 - `aggregated_runner.py` — baseline fan-out runner across multiple mailbox runtimes
 - `unified_reader.py` — projection of processed records into unified message view
 - `onboarding_models.py` — mailbox lifecycle / onboarding DTOs and states
-- `onboarding_service.py` — baseline onboarding transitions for connect/auth-complete/reauth/disconnect
+- `onboarding_service.py` — baseline onboarding transitions for connect/auth-complete/reauth/disconnect, now Gmail-aware
 - `onboarding_cli.py` — local CLI for onboarding flows
 - `secret_binding.py` — mailbox-specific secret binding
 - `provider_state.py` — provider-side state ops abstraction (`mark_seen`)
@@ -80,6 +82,8 @@
 - `tests_provider_presets.py` — provider preset tests
 - `tests_aggregated_runner.py` — aggregated runner tests
 - `tests_onboarding.py` — onboarding contract tests
+- `tests_onboarding_gmail.py` — Gmail-specific onboarding tests
+- `tests_gmail_oauth.py` — Gmail OAuth contract tests
 - `tests_imap_client.py` — low-level IMAP session tests
 - `tests_live_components.py` — live fetcher + secret binding tests
 - `tests_merge_sync.py` — env merge + sync decision tests

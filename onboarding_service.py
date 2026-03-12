@@ -15,6 +15,7 @@ from onboarding_models import (
     OAuthAuthorizationSession,
     OnboardingInstruction,
 )
+from gmail_oauth_service import start_google_oauth
 from provider_presets import AuthMode, ProviderPreset, get_provider_preset
 
 
@@ -45,18 +46,22 @@ def connect_mailbox(*, user_id: str, provider: str, email_address: str | None = 
 
     auth_session = None
     if preset.preferred_auth_mode == AuthMode.OAUTH:
-        auth_session = OAuthAuthorizationSession(
-            auth_session_id=f"oas_{uuid4().hex[:12]}",
-            user_id=user_id,
-            provider=preset.provider_id.value,
-            mailbox_label=display_name or preset.display_name,
-            status="PENDING",
-            state_token=f"st_{uuid4().hex}",
-            redirect_uri="https://backend.example.com/oauth/callback",
-            created_at=_now(),
-            expires_at=_future(15),
-        )
-        instructions.insert(0, OnboardingInstruction(step="oauth_start", details="Open the authorization URL and complete provider consent."))
+        if preset.provider_id.value == "gmail":
+            auth_session, oauth_start = start_google_oauth(user_id=user_id, mailbox_label=display_name or preset.display_name)
+            instructions.insert(0, OnboardingInstruction(step="oauth_start", details=f"Open authorization URL: {oauth_start.authorization_url}"))
+        else:
+            auth_session = OAuthAuthorizationSession(
+                auth_session_id=f"oas_{uuid4().hex[:12]}",
+                user_id=user_id,
+                provider=preset.provider_id.value,
+                mailbox_label=display_name or preset.display_name,
+                status="PENDING",
+                state_token=f"st_{uuid4().hex}",
+                redirect_uri="https://backend.example.com/oauth/callback",
+                created_at=_now(),
+                expires_at=_future(15),
+            )
+            instructions.insert(0, OnboardingInstruction(step="oauth_start", details="Open the authorization URL and complete provider consent."))
     else:
         instructions.insert(0, OnboardingInstruction(step="credential_input", details="Provide provider-specific app password via the secure backend intake path."))
 
