@@ -15,7 +15,9 @@ from onboarding_models import (
     OAuthAuthorizationSession,
     OnboardingInstruction,
 )
-from gmail_oauth_service import start_google_oauth
+from pathlib import Path
+
+from gmail_oauth_backend import GmailOAuthBackend
 from provider_presets import AuthMode, ProviderPreset, get_provider_preset
 
 
@@ -47,7 +49,8 @@ def connect_mailbox(*, user_id: str, provider: str, email_address: str | None = 
     auth_session = None
     if preset.preferred_auth_mode == AuthMode.OAUTH:
         if preset.provider_id.value == "gmail":
-            auth_session, oauth_start = start_google_oauth(user_id=user_id, mailbox_label=display_name or preset.display_name)
+            backend = GmailOAuthBackend(Path('.state/email_sanitizer/oauth_sessions.json'))
+            auth_session, oauth_start = backend.start(user_id=user_id, mailbox_label=display_name or preset.display_name)
             instructions.insert(0, OnboardingInstruction(step="oauth_start", details=f"Open authorization URL: {oauth_start.authorization_url}"))
         else:
             auth_session = OAuthAuthorizationSession(

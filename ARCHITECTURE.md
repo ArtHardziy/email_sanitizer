@@ -188,3 +188,4 @@ Preset должен задавать:
 - отдельные OAuth DTO введены
 - есть start/complete contract для Google OAuth
 - onboarding flow для Gmail теперь выдаёт provider-specific authorization URL
+- добавлен stateful backend path с OAuth session store и PKCE scaffolding

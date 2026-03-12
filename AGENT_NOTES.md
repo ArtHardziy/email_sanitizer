@@ -45,7 +45,10 @@
 - `multi_runtime_loader.py` — loading a multi-mailbox runtime from config
 - `provider_presets.py` — provider defaults and auth-mode metadata for Gmail/Yandex/Mail.ru/iCloud
 - `oauth_models.py` — provider-aware OAuth DTOs
+- `oauth_state_store.py` — persistent local OAuth session store
+- `pkce_utils.py` — PKCE verifier/challenge helpers
 - `gmail_oauth_service.py` — baseline Gmail OAuth start/complete contract
+- `gmail_oauth_backend.py` — stateful Gmail OAuth backend path with PKCE/session validation scaffolding
 - `aggregate_models.py` — DTOs for aggregated mailbox runs and unified messages
 - `aggregated_runner.py` — baseline fan-out runner across multiple mailbox runtimes
 - `unified_reader.py` — projection of processed records into unified message view
@@ -84,6 +87,7 @@
 - `tests_onboarding.py` — onboarding contract tests
 - `tests_onboarding_gmail.py` — Gmail-specific onboarding tests
 - `tests_gmail_oauth.py` — Gmail OAuth contract tests
+- `tests_gmail_oauth_backend.py` — Gmail OAuth backend/session/PKCE tests
 - `tests_imap_client.py` — low-level IMAP session tests
 - `tests_live_components.py` — live fetcher + secret binding tests
 - `tests_merge_sync.py` — env merge + sync decision tests
@@ -208,6 +212,9 @@
 - `python tests_provider_presets.py`
 - `python tests_aggregated_runner.py`
 - `python tests_onboarding.py`
+- `python tests_onboarding_gmail.py`
+- `python tests_gmail_oauth.py`
+- `python tests_gmail_oauth_backend.py`
 - `python tests_imap_client.py`
 - `python tests_live_components.py`
 - `python tests_merge_sync.py`
@@ -219,6 +226,7 @@
 - `python runner_demo.py`
 - `python provider_presets_demo.py`
 - `python aggregated_runner_demo.py`
+- `python gmail_oauth_demo.py`
 - `python onboarding_demo.py`
 - `python multi_runtime_demo.py`
 - `python dry_run_demo.py`

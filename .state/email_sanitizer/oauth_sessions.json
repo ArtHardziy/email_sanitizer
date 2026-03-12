@@ -1,0 +1,37 @@
+{
+  "sessions": [
+    {
+      "auth_session_id": "oas_60618d43d07d",
+      "user_id": "user-1",
+      "provider": "gmail",
+      "mailbox_label": "Gmail",
+      "status": "PENDING",
+      "state_token": "st_24070766b41344728ff96d11119088fd",
+      "redirect_uri": "https://backend.example.com/oauth/google/callback",
+      "created_at": "2026-03-12T20:55:18.732034+00:00",
+      "expires_at": "2026-03-12T21:10:18.732034+00:00"
+    },
+    {
+      "auth_session_id": "oas_e2e35288cac4",
+      "user_id": "user-1",
+      "provider": "gmail",
+      "mailbox_label": "Gmail",
+      "status": "PENDING",
+      "state_token": "st_4ae46176c1584316839a2c838eaf4997",
+      "redirect_uri": "https://backend.example.com/oauth/google/callback",
+      "created_at": "2026-03-12T20:55:18.807649+00:00",
+      "expires_at": "2026-03-12T21:10:18.807649+00:00"
+    },
+    {
+      "auth_session_id": "oas_7fb1791fa4be",
+      "user_id": "demo-user",
+      "provider": "gmail",
+      "mailbox_label": "Gmail",
+      "status": "PENDING",
+      "state_token": "st_9dab32b60df24587be4c05b4508ea2c7",
+      "redirect_uri": "https://backend.example.com/oauth/google/callback",
+      "created_at": "2026-03-12T20:55:18.968818+00:00",
+      "expires_at": "2026-03-12T21:10:18.968818+00:00"
+    }
+  ]
+}
