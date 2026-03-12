@@ -124,31 +124,37 @@
 
 ## Что делать дальше
 Следующий этап разработки:
-1. реальный credential-aware IMAP/Gmail adapter
-   - локальная загрузка секретов/токенов вне agent-facing path
-   - безопасный fetch unseen/new mail
-   - маркировка processed/read state
-2. richer config + secrets integration
-   - mailbox config из file/env/secrets
-   - policy profile selection per mailbox
-   - notify thresholds and schedules
+1. multi-mailbox config/runtime layer
+   - aggregate runtime над несколькими mailbox
+   - mailbox-specific state/rules/secrets
+   - unified orchestration поверх enabled mailbox
+2. provider presets
+   - Gmail
+   - Yandex
+   - Mail.ru
+   - iCloud
+   - provider-specific auth defaults and IMAP settings
+3. aggregated runner
+   - fan-out sync/read across ACTIVE mailboxes
+   - partial success contract
+   - aggregate notifications / unified inbox flow
+4. mailbox onboarding contract
+   - connect/auth complete/reauth/disconnect states
+   - provider-specific onboarding instructions
+   - machine-readable contract for CLI + agent
+5. richer config + secrets integration
+   - file/env/secrets precedence and validation
    - mailbox-specific secret binding
-3. richer allow/deny and categorization
-   - sender/domain/category allowlists
-   - noisy sender suppression
-   - per-mailbox overrides
-4. delivery integration
+6. delivery integration
    - сериализация `NotificationMessage` в OpenClaw-facing alerts
    - batching and deduplication поверх runtime state
-5. stronger structured extraction
+7. stronger structured extraction
    - action items / dates / reply-needed / call-needed / payment-needed
    - безопасная нормализация subject/snippet/body
-6. расширить tests:
-   - multipart emails
-   - html-only emails
-   - encoded headers
-   - newsletters/noise suppression
-   - sender deny + security override conflicts
+8. расширить tests
+   - multi-mailbox orchestration
+   - provider presets
+   - onboarding flows
    - duplicate notification suppression
 
 ## Ограничения текущей версии
