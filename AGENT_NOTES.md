@@ -48,6 +48,10 @@
 - `live_runner.py` — near-live mailbox cycle using real IMAP session contracts
 - `merge_config.py` — file/env merge for mailbox runtime config
 - `sync_policy.py` — provider/local state sync decisions
+- `validation.py` — config validation reports
+- `diagnostics.py` — runtime diagnostics
+- `delivery_format.py` — delivery-ready notification serialization
+- `cli.py` — local CLI (`validate`, `diagnose`)
 - `pipeline.py` — mailbox-level orchestration
 - `runner.py` — one-cycle mailbox runner with state + dedup
 - `imap_runner.py` — skeleton для future real IMAP run cycle
@@ -67,6 +71,8 @@
 - `tests_live_components.py` — live fetcher + secret binding tests
 - `tests_merge_sync.py` — env merge + sync decision tests
 - `tests_live_runtime_env.py` — runtime env override tests
+- `tests_validation_diag.py` — validation + diagnostics tests
+- `tests_delivery_cli.py` — delivery/CLI tests
 - `sample_config.json` — пример локального конфига
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
@@ -148,9 +154,9 @@
 ## Ограничения текущей версии
 - Live IMAP path уже смоделирован, но ещё не подключён к реальным пользовательским секретам/окружению OpenClaw.
 - Нет Gmail adapter.
-- File/env merge для mailbox config уже есть, но нет полноценного file/env/secrets precedence layer с validation/reporting.
+- File/env merge и validation уже есть, но нет полноценного file/env/secrets precedence layer с detailed validation/reporting across all sources.
 - Provider-side state есть как abstraction + IMAP mark_seen hooks + sync policy, но нет полной sync-стратегии/rollback модели.
-- Нет delivery integration в реальный alerting channel.
+- Delivery serialization уже есть, но нет реального delivery bridge в alerting channel.
 - Structured extraction пока эвристическое и лёгкое.
 
 ## Запуск локальной проверки
@@ -171,11 +177,15 @@
 - `python tests_live_components.py`
 - `python tests_merge_sync.py`
 - `python tests_live_runtime_env.py`
+- `python tests_validation_diag.py`
+- `python tests_delivery_cli.py`
 - `python example_usage.py`
 - `python pipeline_demo.py`
 - `python runner_demo.py`
 - `python dry_run_demo.py`
 - `python live_dry_run.py`
+- `python cli.py validate --config sample_config.json --json`
+- `python cli.py diagnose --config sample_config.json --json`
 
 ## Принцип для будущих изменений
 Лучше лишний раз заблокировать и уведомить пользователя, чем пропустить auth/injection контент в агентный слой.
