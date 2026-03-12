@@ -156,3 +156,13 @@ Preset должен задавать:
 - preferred auth mode
 - allowed auth modes
 - onboarding hints
+
+## Aggregated runner (implemented baseline)
+Введён baseline aggregated runner поверх multi-mailbox runtime.
+
+Он уже умеет:
+- fan-out по enabled mailbox
+- per-mailbox isolation
+- partial success contract
+- aggregate notifications
+- unified message projection
