@@ -46,6 +46,8 @@
 - `imap_client.py` — low-level IMAP session wrapper (`select/search/fetch/store`)
 - `live_fetcher.py` — live unseen-mail fetcher over IMAP session
 - `live_runner.py` — near-live mailbox cycle using real IMAP session contracts
+- `merge_config.py` — file/env merge for mailbox runtime config
+- `sync_policy.py` — provider/local state sync decisions
 - `pipeline.py` — mailbox-level orchestration
 - `runner.py` — one-cycle mailbox runner with state + dedup
 - `imap_runner.py` — skeleton для future real IMAP run cycle
@@ -63,11 +65,14 @@
 - `tests_runtime_loader.py` — runtime loader tests
 - `tests_imap_client.py` — low-level IMAP session tests
 - `tests_live_components.py` — live fetcher + secret binding tests
+- `tests_merge_sync.py` — env merge + sync decision tests
+- `tests_live_runtime_env.py` — runtime env override tests
 - `sample_config.json` — пример локального конфига
 - `example_usage.py` — демонстрационный сценарий
 - `pipeline_demo.py` — sanitizer pipeline demo
 - `runner_demo.py` — mailbox orchestration demo
 - `dry_run_demo.py` — runner dry-run demo with state persistence
+- `live_dry_run.py` — env/config/live-runtime dry-run demo
 - `example_ingestion_contract.json` — пример контракта raw->sanitized
 
 ## Текущая логика
@@ -143,8 +148,8 @@
 ## Ограничения текущей версии
 - Live IMAP path уже смоделирован, но ещё не подключён к реальным пользовательским секретам/окружению OpenClaw.
 - Нет Gmail adapter.
-- Config loader пока читает JSON, но без полноценной file/env/secrets merge-логики.
-- Provider-side state есть только как abstraction + IMAP mark_seen hooks; нет полной sync-стратегии.
+- File/env merge для mailbox config уже есть, но нет полноценного file/env/secrets precedence layer с validation/reporting.
+- Provider-side state есть как abstraction + IMAP mark_seen hooks + sync policy, но нет полной sync-стратегии/rollback модели.
 - Нет delivery integration в реальный alerting channel.
 - Structured extraction пока эвристическое и лёгкое.
 
@@ -164,10 +169,13 @@
 - `python tests_runtime_loader.py`
 - `python tests_imap_client.py`
 - `python tests_live_components.py`
+- `python tests_merge_sync.py`
+- `python tests_live_runtime_env.py`
 - `python example_usage.py`
 - `python pipeline_demo.py`
 - `python runner_demo.py`
 - `python dry_run_demo.py`
+- `python live_dry_run.py`
 
 ## Принцип для будущих изменений
 Лучше лишний раз заблокировать и уведомить пользователя, чем пропустить auth/injection контент в агентный слой.

@@ -8,6 +8,7 @@ from provider_state import ProviderStateOps
 from runner import MailboxRunner, RunnerOutcome
 from runtime_config import MailboxRuntime
 from secret_binding import bind_mailbox_secret
+from sync_policy import decide_sync
 
 
 @dataclass(slots=True)
@@ -24,10 +25,17 @@ def run_live_cycle(runtime: MailboxRuntime, *, mark_seen_after_fetch: bool = Fal
     session = login_imap(runtime.mailbox, bound.resolved_secret)
     provider_state = ProviderStateOps()
     try:
-        fetcher = LiveIMAPFetcher(session, mark_seen_after_fetch=mark_seen_after_fetch)
+        fetcher = LiveIMAPFetcher(session, mark_seen_after_fetch=False)
         runner = MailboxRunner(runtime, fetcher)
         outcome = runner.run_once()
-        if mark_seen_after_fetch and fetcher.last_fetched_ids:
+        decision = decide_sync(
+            fetched_count=outcome.new_record_count,
+            notification_count=len(outcome.pipeline.notifications),
+            provider_seen_mode="after_success" if mark_seen_after_fetch else "never",
+            local_processed_mode="always",
+        )
+        if decision.mark_seen_provider and fetcher.last_fetched_ids:
+            session.mark_seen(fetcher.last_fetched_ids)
             provider_state.mark_seen([mid.decode() for mid in fetcher.last_fetched_ids])
         return LiveRunResult(outcome=outcome, provider_state=provider_state)
     finally:
