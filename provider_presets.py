@@ -4,7 +4,7 @@ from dataclasses import dataclass, replace
 from enum import Enum
 
 from config import MailboxConfig
-from oauth_models import OAuthConfig
+from oauth_models import OAuthClientConfig, OAuthConfig
 
 
 class ProviderId(str, Enum):
@@ -48,6 +48,7 @@ PRESETS: dict[ProviderId, ProviderPreset] = {
         onboarding_hints=[
             "Use OAuth 2.0 as the primary authentication path.",
             "Preserve abstraction so IMAP XOAUTH2 can later be swapped for Gmail API without breaking the domain model.",
+            "Client secret must stay in backend secret storage; only client metadata should surface outside.",
         ],
         oauth_config=OAuthConfig(
             authorization_url="https://accounts.google.com/o/oauth2/v2/auth",
@@ -59,6 +60,11 @@ PRESETS: dict[ProviderId, ProviderPreset] = {
                 "email",
             ],
             use_pkce=True,
+            client_config=OAuthClientConfig(
+                client_id="BACKEND_CONFIGURED_CLIENT_ID",
+                client_secret_ref_id="sec_google_oauth_client_secret",
+                token_endpoint_auth_method="client_secret_post",
+            ),
         ),
     ),
     ProviderId.YANDEX: ProviderPreset(

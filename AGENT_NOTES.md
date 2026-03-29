@@ -47,6 +47,18 @@
 - `oauth_models.py` — provider-aware OAuth DTOs
 - `oauth_state_store.py` — persistent local OAuth session store
 - `pkce_utils.py` — PKCE verifier/challenge helpers
+- `secret_manager.py` — local secret-manager abstraction returning metadata/ref outward and keeping secret values backend-only
+- `credential_registry.py` — local registry for mailbox credential refs
+- `mailbox_registry.py` — local registry for persisted connected mailboxes
+- `mailbox_status.py` — mailbox status/health rendering over mailbox + credential ref state
+- `oauth_exchange.py` — token-exchange abstraction for provider OAuth completion with client metadata / callback contract shape
+- `client_secret_registry.py` — validation surface for provider OAuth client secret ref metadata + runtime secret-store presence
+- `oauth_callback_service.py` — provider callback handling service over callback payloads
+- `OAuthCallbackPayload` / `complete_from_callback(...)` — callback-shaped completion path for provider OAuth flows
+- `oauth_diagnostics.py` — safe diagnostics for OAuth session lifecycle state
+- `oauth_cli.py` — local CLI for OAuth session inspect/list/cleanup flows
+- `mailbox_diagnostics.py` — combined mailbox + credential-ref + secret-descriptor + OAuth-session diagnostic bundle
+- `onboarding_cli.py` — now also supports secret revoke/rotate and reauth-start flows
 - `gmail_oauth_service.py` — baseline Gmail OAuth start/complete contract
 - `gmail_oauth_backend.py` — stateful Gmail OAuth backend path with PKCE/session validation scaffolding
 - `aggregate_models.py` — DTOs for aggregated mailbox runs and unified messages
@@ -146,6 +158,18 @@
 ## Пойманные нюансы
 - Был ложный trigger на `code review` как на OTP. Исправлено: OTP regex больше не матчится на любое слово `code`.
 - Sanitize сейчас применяется к `snippet + body_text`, чтобы redaction охватывал и snippet.
+- Gmail OAuth completion теперь должен идти через session-bound flow: `auth_session_id + state_token + authorization_code`.
+- Внешний слой не должен видеть refresh token; наружу возвращаются только `credential_ref_id` / `secret_ref_id` metadata.
+- OAuth client secret тоже должен оставаться только в backend secret plane; наружу допустимы лишь `client_id` и `client_secret_ref_id` metadata.
+- После Gmail auth completion полезно сохранять `provider_account_id` и `client_secret_ref_id` в mailbox/credential metadata для дальнейшей диагностики и reauth.
+- Status/diagnostics surfaces должны показывать provider metadata, но не раскрывать secret values.
+- Callback handling лучше выражать отдельной payload model, а не сырым набором аргументов.
+- Для Gmail readiness важно валидировать не только наличие `client_secret_ref_id` в metadata, но и его фактическое присутствие в secret store.
+- Mailbox health теперь должен учитывать не только credential ref, но и secret descriptor status.
+- На каждую безопасную health-проблему лучше возвращать remediation hints, а не просто код ошибки.
+- Secret lifecycle уже поддерживает revoke/rotate; rotate должен помечать прошлый secret как superseded/revoked и переводить mailbox обратно в ACTIVE.
+- Reauth flow полезнее делать двухшаговым: сначала отметить mailbox как REAUTH_REQUIRED, потом запускать новый auth/session path для того же mailbox_id, а не создавать новый mailbox.
+- При чтении persisted state нужно нормализовать enum-поля обратно в domain enums; иначе status/diagnostics начинают тихо ломаться.
 
 ## Что делать дальше
 Следующий этап разработки:
@@ -167,13 +191,18 @@
    - aggregate notifications / unified inbox flow
    - status: базовый слой введён (`aggregated_runner.py`, `aggregate_models.py`, `unified_reader.py`)
 4. mailbox onboarding contract
-   - connect/auth complete/reauth/disconnect states
+   - connect/auth complete/reauth/disconnect/status/list states
    - provider-specific onboarding instructions
    - machine-readable contract for CLI + agent
    - status: базовый слой введён (`onboarding_models.py`, `onboarding_service.py`, `onboarding_cli.py`)
+   - Gmail refinement status: credential-ref-aware completion + session lifecycle baseline added
+   - mailbox registry + mailbox status/health surface added for local inspection
+   - OAuth session diagnostics/list/cleanup surface added for local inspection
 5. richer config + secrets integration
    - file/env/secrets precedence and validation
    - mailbox-specific secret binding
+   - status: local secret-manager abstraction introduced; still not production KMS-backed
+   - Gmail token exchange now goes through a dedicated abstraction instead of inline refresh-token scaffolding
 6. delivery integration
    - сериализация `NotificationMessage` в OpenClaw-facing alerts
    - batching and deduplication поверх runtime state
@@ -215,6 +244,19 @@
 - `python tests_onboarding_gmail.py`
 - `python tests_gmail_oauth.py`
 - `python tests_gmail_oauth_backend.py`
+- `python tests_secret_manager.py`
+- `python tests_credential_registry.py`
+- `python tests_mailbox_registry.py`
+- `python tests_mailbox_status.py`
+- `python tests_onboarding_cli_status.py`
+- `python tests_onboarding_cli_lifecycle.py`
+- `python tests_client_secret_registry.py`
+- `python tests_oauth_callback_service.py`
+- `python tests_oauth_exchange.py`
+- `python tests_oauth_diagnostics.py`
+- `python tests_oauth_cli.py`
+- `python tests_mailbox_diagnostics.py`
+- `python tests_onboarding_cli_secret_ops.py`
 - `python tests_imap_client.py`
 - `python tests_live_components.py`
 - `python tests_merge_sync.py`

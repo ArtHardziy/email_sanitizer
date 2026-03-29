@@ -134,6 +134,35 @@
 - delivery bridge to real user-facing alerting
 - production-grade secrets integration
 
+## Gmail pilot status (current)
+Сейчас Gmail — pilot provider для безопасного onboarding path.
+
+Что уже добавлено поверх baseline:
+- session-bound Gmail OAuth completion (`auth_session_id + state_token + authorization_code`)
+- PKCE-backed auth start
+- локальный persistent OAuth session store
+- credential-ref oriented completion result
+- local secret-manager abstraction: наружу уходит metadata/ref, секрет остаётся в backend path
+- local credential registry for mailbox credential refs
+- local mailbox registry for persisted connected mailbox lifecycle
+- mailbox status/health projection over mailbox + credential ref state
+- safe OAuth diagnostics/list/cleanup layer over persisted session state
+- token-exchange abstraction for provider OAuth completion with client config / client-secret-ref metadata
+- provider account metadata persisted on mailbox/credential layer
+- callback-payload-based OAuth completion path
+- provider callback handling service layer
+- runtime validation for configured OAuth client secret refs against secret storage
+- combined mailbox/credential/secret/OAuth diagnostic bundle surface enriched with provider metadata
+- remediation-hint layer for safe operator guidance
+- secret revoke/rotate lifecycle with supersession metadata
+- reauth-start control flow that opens a fresh auth session for the same persisted mailbox context / mailbox_id
+- базовый lifecycle статусов OAuth session (`AUTH_URL_ISSUED`, `CALLBACK_RECEIVED`, `TOKEN_EXCHANGED`, `BOUND`, `EXPIRED`, `FAILED`, `REVOKED`)
+
+Что это означает:
+- CLI/agent plane больше не должны таскать refresh token как значение
+- connected mailbox должен ссылаться на credential ref
+- secret value живёт отдельно от onboarding-visible DTO
+
 ## Следующий шаг реализации
 1. Ввести multi-mailbox config/runtime layer
 2. Ввести provider presets и provider metadata
@@ -189,3 +218,5 @@ Preset должен задавать:
 - есть start/complete contract для Google OAuth
 - onboarding flow для Gmail теперь выдаёт provider-specific authorization URL
 - добавлен stateful backend path с OAuth session store и PKCE scaffolding
+- completion path теперь создаёт secret ref и возвращает credential-oriented результат вместо secret-bearing результата
+- добавлен baseline local secret-manager contract для Gmail refresh-token path

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 class MailboxState(str, Enum):
@@ -20,6 +19,24 @@ class CredentialType(str, Enum):
     APP_PASSWORD = "app_password"
     EXTERNAL_APP_PASSWORD = "external_app_password"
     XOAUTH2_REFRESH_TOKEN = "xoauth2_refresh_token"
+    PROVIDER_CLIENT_SECRET = "provider_client_secret"
+
+
+class CredentialRefStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    REVOKED = "REVOKED"
+    EXPIRED = "EXPIRED"
+
+
+class OAuthSessionStatus(str, Enum):
+    CREATED = "CREATED"
+    AUTH_URL_ISSUED = "AUTH_URL_ISSUED"
+    CALLBACK_RECEIVED = "CALLBACK_RECEIVED"
+    TOKEN_EXCHANGED = "TOKEN_EXCHANGED"
+    BOUND = "BOUND"
+    EXPIRED = "EXPIRED"
+    FAILED = "FAILED"
+    REVOKED = "REVOKED"
 
 
 @dataclass(slots=True)
@@ -34,17 +51,26 @@ class ConnectedMailbox:
     created_at: str
     updated_at: str
     credential_ref_id: str | None = None
+    provider_account_id: str | None = None
 
 
 @dataclass(slots=True)
 class MailboxCredentialRef:
     credential_ref_id: str
     mailbox_id: str
+    provider: str
     credential_type: CredentialType
     secret_ref_id: str | None
-    status: str
+    status: CredentialRefStatus
     version: int
     created_at: str
+    updated_at: str
+    auth_mode: str
+    provider_account_id: str | None = None
+    client_secret_ref_id: str | None = None
+    last_validated_at: str | None = None
+    expires_at: str | None = None
+    revoked_at: str | None = None
 
 
 @dataclass(slots=True)
@@ -53,11 +79,20 @@ class OAuthAuthorizationSession:
     user_id: str
     provider: str
     mailbox_label: str | None
-    status: str
+    mailbox_id: str | None
+    status: OAuthSessionStatus
     state_token: str
     redirect_uri: str
     created_at: str
     expires_at: str
+    auth_mode: str
+    pkce_required: bool = True
+    auth_url_issued_at: str | None = None
+    callback_received_at: str | None = None
+    token_exchanged_at: str | None = None
+    bound_at: str | None = None
+    revoked_at: str | None = None
+    failure_reason: str | None = None
 
 
 @dataclass(slots=True)
